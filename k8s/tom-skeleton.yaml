@@ -1,9 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tom-skeleton-deployment
-  labels:
-    app: tom-skeleton
+  name: tom-skeleton
+  namespace: default
 spec:
   replicas: 1
   selector:
@@ -15,10 +14,13 @@ spec:
         app: tom-skeleton
     spec:
       containers:
-      - name: tom-skeleton
-        image: tom-reg.kr.ncr.ntruss.com/tom-skeleton:latest
-        ports:
-        - containerPort: 3000
+        - image: 'tom-reg.kr.ncr.ntruss.com/tom-skeleton:latest'
+          imagePullPolicy: Always
+          name: tom-skeleton
+          ports:
+            - containerPort: 3000
+      imagePullSecrets:
+        - name: ncp-cr
 ---
 apiVersion: v1
 kind: Service
