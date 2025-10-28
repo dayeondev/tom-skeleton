@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tom-skeleton-deployment
+  labels:
+    app: tom-skeleton
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tom-skeleton
+  template:
+    metadata:
+      labels:
+        app: tom-skeleton
+    spec:
+      containers:
+      - name: tom-skeleton
+        image: tom-reg.kr.ncr.ntruss.com/tom-skeleton:latest
+        ports:
+        - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tom-skeleton-svc
+spec:
+  type: LoadBalancer
+  selector:
+    app: tom-skeleton
+  ports:
+    - name: http
+      nodePort: 31002
+      port: 8080
+      protocol: TCP
+      targetPort: 3000
