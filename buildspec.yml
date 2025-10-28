@@ -1,0 +1,68 @@
+version: 0.2
+
+env:
+  variables:
+    NODE_ENV: "production"
+    NEXT_PUBLIC_API_BASE_URL: "http://localhost:8080"
+    NEXT_PUBLIC_API_CAREER_URL: "http://localhost:8000"
+
+phases:
+  pre_build:
+    commands:
+      - echo "=== Pre Build Phase ==="
+      - echo "Node version:"
+      - node --version
+      - echo "npm version:"
+      - npm --version
+      - echo "Docker version:"
+      - docker --version
+
+      # Container Registry 로그인
+      - echo "Logging in to NCP Container Registry..."
+      - echo $NCR_ACCESS_KEY | docker login $NCR_REGISTRY_URL --username $NCR_USERNAME --password-stdin
+
+      # 이미지 태그 설정
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_TAG=${COMMIT_HASH:-latest}
+      - REPOSITORY_URI=$NCR_REGISTRY_URL/$IMAGE_REPO_NAME
+      - echo "Image will be tagged as $REPOSITORY_URI:$IMAGE_TAG"
+
+  build:
+    commands:
+      - echo "=== Build Phase ==="
+
+      # 의존성 설치
+      - echo "Installing dependencies..."
+      - npm ci
+
+      # 애플리케이션 빌드
+      - echo "Building Next.js application..."
+      - npm run build
+
+      # Docker 이미지 빌드
+      - echo "Building Docker image..."
+      - docker build -t $REPOSITORY_URI:$IMAGE_TAG .
+      - docker tag $REPOSITORY_URI:$IMAGE_TAG $REPOSITORY_URI:latest
+
+  post_build:
+    commands:
+      - echo "=== Post Build Phase ==="
+      - echo "Build completed at $(date)"
+
+      # Docker 이미지 푸시
+      - echo "Pushing Docker images..."
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - docker push $REPOSITORY_URI:latest
+
+      # 빌드 정보 출력
+      - echo "Images pushed successfully:"
+      - echo "  Latest: $REPOSITORY_URI:latest"
+      - echo "  Tagged: $REPOSITORY_URI:$IMAGE_TAG"
+
+artifacts:
+  files:
+    - .next/**
+    - public/**
+    - package.json
+    - next.config.js
+  name: tom-skeleton-artifacts
