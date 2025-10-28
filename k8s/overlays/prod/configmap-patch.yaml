@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: tom-skeleton-config
-data:
-  NEXT_PUBLIC_API_BASE_URL: "https://api.tom-kpaas.com"
-  NEXT_PUBLIC_API_CAREER_URL: "https://career.tom-kpaas.com"

@@ -1,12 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tom-skeleton
-  labels:
-    app: tom-skeleton
-    version: v1
+  name: tom-skeleton-deploy
+  namespace: default
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: tom-skeleton
@@ -14,50 +12,11 @@ spec:
     metadata:
       labels:
         app: tom-skeleton
-        version: v1
     spec:
+      imagePullSecrets:
+      - name: ncp-cr
       containers:
       - name: tom-skeleton
         image: tom-reg.kr.ncr.ntruss.com/tom-skeleton:latest
-        imagePullPolicy: Always
         ports:
         - containerPort: 3000
-          name: http
-        env:
-        - name: NODE_ENV
-          value: "production"
-        - name: NEXT_PUBLIC_API_BASE_URL
-          valueFrom:
-            configMapKeyRef:
-              name: tom-skeleton-config
-              key: NEXT_PUBLIC_API_BASE_URL
-        - name: NEXT_PUBLIC_API_CAREER_URL
-          valueFrom:
-            configMapKeyRef:
-              name: tom-skeleton-config
-              key: NEXT_PUBLIC_API_CAREER_URL
-        resources:
-          requests:
-            memory: "128Mi"
-            cpu: "100m"
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 3000
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 3000
-          initialDelaySeconds: 5
-          periodSeconds: 5
-          timeoutSeconds: 3
-          failureThreshold: 3
-      imagePullSecrets:
-      - name: ncr-registry-secret
