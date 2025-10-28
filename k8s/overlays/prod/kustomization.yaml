@@ -1,0 +1,27 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+bases:
+- ../..
+
+namespace: tom-prod
+
+namePrefix: prod-
+
+commonLabels:
+  env: prod
+
+replicas:
+- name: tom-skeleton
+  count: 3
+
+images:
+- name: tom-reg.kr.ncr.ntruss.com/tom-skeleton
+  newTag: latest
+
+patchesStrategicMerge:
+- configmap-patch.yaml
+- resources-patch.yaml
+
+resources:
+- ingress-patch.yaml

@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tom-skeleton-config
+  labels:
+    app: tom-skeleton
+data:
+  NEXT_PUBLIC_API_BASE_URL: "http://localhost:8080"
+  NEXT_PUBLIC_API_CAREER_URL: "http://localhost:8000"
+
+---
+# Development 환경용 ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tom-skeleton-config-dev
+  labels:
+    app: tom-skeleton
+    env: dev
+data:
+  NEXT_PUBLIC_API_BASE_URL: "http://dev-api.example.com:8080"
+  NEXT_PUBLIC_API_CAREER_URL: "http://dev-career.example.com:8000"
+
+---
+# Production 환경용 ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tom-skeleton-config-prod
+  labels:
+    app: tom-skeleton
+    env: prod
+data:
+  NEXT_PUBLIC_API_BASE_URL: "https://api.example.com"
+  NEXT_PUBLIC_API_CAREER_URL: "https://career.example.com"
